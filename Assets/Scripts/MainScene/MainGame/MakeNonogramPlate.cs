@@ -21,12 +21,12 @@ public class MakeNonogramPlate : MonoBehaviour
 
     private float lineThicknessValue = 4;
     // Start is called before the first frame update
-    void Start()
+    public void Init()
     {
-        MakeBlocks(10,10);
+        
     }
     
-    public void MakeBlocks(int horizonBlockNum, int verticalBlockNum)
+    public void MakeNonoBlocks(int horizonBlockNum, int verticalBlockNum)
     {
         GameObject nonoBlock;
         RectTransform nonoBlockRectTrans;
