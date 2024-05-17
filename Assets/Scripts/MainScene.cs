@@ -23,7 +23,7 @@ public class MainScene : MonoBehaviour
     }
     void Start()
     {
-        
+        Init();
     }
 
     void Init()

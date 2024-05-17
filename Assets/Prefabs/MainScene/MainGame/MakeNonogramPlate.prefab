@@ -52,7 +52,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faa4a89fa201a114b9b29773fc0a985a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nonoBlockPrefab: {fileID: 6591118881128495191, guid: a997f8912b58faf43a61a5e160252a59, type: 3}
+  nonoBlockPrefab: {fileID: 2597152413422404692, guid: a997f8912b58faf43a61a5e160252a59, type: 3}
   backgroundPlate: {fileID: 187015976923988891}
   blockParents: {fileID: 187015976937268566}
 --- !u!222 &187015976033751936
