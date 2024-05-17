@@ -85,15 +85,16 @@ public class MakeNonogramPlate : MonoBehaviour
         float horizonOffset = (horizonInterval - horizonLength) * 0.5f;
         float verticalOffset = (-verticalInterval + verticalLength) * 0.5f;
 
-        float blockWidth = horizonInterval - lineThicknessValue;
-        float blockHeight = verticalInterval - lineThicknessValue;
+        float innerBlockWidth = horizonInterval - lineThicknessValue;
+        float innerBlockHeight = verticalInterval - lineThicknessValue;
 
         for (int i = 0; i < verticalBlockNum; i++)
         {
             for (int j = 0; j < horizonBlockNum; j++)
             {
                 nonoBlock = allBlockList[i * horizonBlockNum + j];
-                nonoBlock.Init(new Vector2(blockWidth, blockHeight), new Vector2(horizonInterval * j + horizonOffset, -verticalInterval * i + verticalOffset), j, i);
+                nonoBlock.Init(new Vector2(innerBlockWidth, innerBlockHeight), new Vector2(horizonInterval, verticalInterval), 
+                    new Vector2(horizonInterval * j + horizonOffset, -verticalInterval * i + verticalOffset), j, i);
                 nonoBlockList.Add(nonoBlock);
                 nonoBlock.gameObject.SetActive(true);
             }

@@ -12,8 +12,12 @@ public class NonoBlock : MonoBehaviour
         public int Y;
     }
 
-    Image image;
-    RectTransform rectTransform;
+    [SerializeField]
+    private GameObject innterBlock;
+
+    Image innerImage;
+    RectTransform outRectTransform;
+    RectTransform innerRectTransform;
 
     Color whiteColor = Color.white;
     Color blackColor = Color.black;
@@ -21,16 +25,22 @@ public class NonoBlock : MonoBehaviour
     bool isBlockFilled;
     Cord cord;
 
-    public void Init(Vector2 sizeDelta, Vector2 position, int cordX, int cordY)
+    public void Init(Vector2 innerSizeDelta, Vector2 outSizeDelta, Vector2 position, int cordX, int cordY)
     {
-        if(!image)
-            image = GetComponent<Image>();
+        if(!innerImage)
+            innerImage = innterBlock.GetComponent<Image>();
 
-        if(!rectTransform)
-            rectTransform = GetComponent<RectTransform>();
+        if(!outRectTransform)
+            outRectTransform = GetComponent<RectTransform>();
 
-        rectTransform.sizeDelta = sizeDelta;
-        rectTransform.transform.localPosition = position;
+        if(!innerRectTransform)
+            innerRectTransform = innterBlock.GetComponent<RectTransform>();
+
+        //내부 블럭 사이즈 줄이기 (가장자리 선 만들기위함)
+        innerRectTransform.sizeDelta = innerSizeDelta;
+        //외부 블럭 사이즈는 간격에 맞게
+        outRectTransform.sizeDelta = outSizeDelta;
+        outRectTransform.transform.localPosition = position;
 
         cord.X = cordX;
         cord.Y = cordY;
@@ -55,8 +65,8 @@ public class NonoBlock : MonoBehaviour
     }
 
     private void SetBlockColor(Color changeColor)
-    {   
-        image.color = changeColor;
+    {
+        innerImage.color = changeColor;
     }
 
     public bool GetBlockState() { return isBlockFilled; }
