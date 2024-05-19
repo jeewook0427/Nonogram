@@ -25,17 +25,20 @@ public class NonoBlock : MonoBehaviour
     bool isBlockFilled;
     Cord cord;
 
-    public void Init(Vector2 innerSizeDelta, Vector2 outSizeDelta, Vector2 position, int cordX, int cordY)
+    private void Awake()
     {
-        if(!innerImage)
+        if (!innerImage)
             innerImage = innterBlock.GetComponent<Image>();
 
-        if(!outRectTransform)
+        if (!outRectTransform)
             outRectTransform = GetComponent<RectTransform>();
 
-        if(!innerRectTransform)
+        if (!innerRectTransform)
             innerRectTransform = innterBlock.GetComponent<RectTransform>();
+    }
 
+    public void Init(Vector2 innerSizeDelta, Vector2 outSizeDelta, Vector2 position, int cordX, int cordY)
+    {
         //내부 블럭 사이즈 줄이기 (가장자리 선 만들기위함)
         innerRectTransform.sizeDelta = innerSizeDelta;
         //외부 블럭 사이즈는 간격에 맞게

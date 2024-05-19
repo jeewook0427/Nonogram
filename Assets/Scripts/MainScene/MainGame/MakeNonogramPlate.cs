@@ -4,8 +4,12 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 
+
 public class MakeNonogramPlate : MonoBehaviour
 {
+    [SerializeField]
+    private PlayHintUI playHintUI;
+
     [SerializeField]
     private NonoBlock nonoBlockPrefab;
 
@@ -28,6 +32,7 @@ public class MakeNonogramPlate : MonoBehaviour
     private NonoBlock previousBlock;
     private List<NonoBlock> touchSelectBlockList;
     private List<NonoBlock> allBlockList;
+    private NonoBlockPlateInfoData currentNonoBlockPlateInfoData;
 
     private int horizonBlockNum;
     private int verticalBlockNum;
@@ -63,15 +68,17 @@ public class MakeNonogramPlate : MonoBehaviour
     }
 
     //노노그램 게임판을 만든다.
-    public void MakeNonoGram(int innerHorizonBlockNum, int innerVerticalBlockNum)
+    public void MakeNonoGram(NonoBlockPlateInfoData nonoBlockPlateInfoData)
     {
         for (int i = 0; i < Constants.MAXBLOCKCOUNT_Y * Constants.MAXBLOCKCOUNT_X; i++)
         {
             allBlockList[i].gameObject.SetActive(false); 
         }
 
-        horizonBlockNum = innerHorizonBlockNum;
-        verticalBlockNum = innerVerticalBlockNum;
+        currentNonoBlockPlateInfoData = nonoBlockPlateInfoData;
+
+        horizonBlockNum = (int)Mathf.Sqrt(nonoBlockPlateInfoData.nonoBlockPlateInfoData.Count);
+        verticalBlockNum = (int)Mathf.Sqrt(nonoBlockPlateInfoData.nonoBlockPlateInfoData.Count);
 
         NonoBlock nonoBlock;
         RectTransform backgroundPlateRectTrans = backgroundPlate.GetComponent<RectTransform>();
@@ -134,12 +141,6 @@ public class MakeNonogramPlate : MonoBehaviour
                 SetSelectedBlockList(true, SelectedBlockNum);
             }
 
-            //else
-            //{
-            //    ChangeSelectedBlocksState(!firstBlockState);
-            //    touchSelectBlockList.Clear();
-            //    return;
-            //}
             ChangeSelectedBlocksState(!firstBlockState);
         }
 
