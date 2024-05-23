@@ -26,16 +26,15 @@ public class MakeNonogramPlate : MonoBehaviour
 
     private float lineThicknessValue = 4;
 
-    private List<NonoBlock> nonoBlockList;
+    private List<NonoBlock> nonoBlockList = new List<NonoBlock>();
     private NonoBlock touchSelectFirstBlock;
     private NonoBlock currentBlock;
     private NonoBlock previousBlock;
-    private List<NonoBlock> touchSelectBlockList;
-    private List<NonoBlock> allBlockList;
+    private List<NonoBlock> touchSelectBlockList = new List<NonoBlock>();
+    private List<NonoBlock> allBlockList = new List<NonoBlock>();
     private NonoBlockPlateInfoData currentNonoBlockPlateInfoData;
 
-    private int horizonBlockNum;
-    private int verticalBlockNum;
+    private int lineBlockNum;
 
     private bool firstBlockState;
 
@@ -45,10 +44,7 @@ public class MakeNonogramPlate : MonoBehaviour
     }
     public void Init()
     {
-        allBlockList = new List<NonoBlock>();
-        nonoBlockList = new List<NonoBlock>();
-        touchSelectBlockList = new List<NonoBlock>();
-
+        playHintUI.Init();
         MakeNonoBlocks();
     }
 
@@ -77,8 +73,8 @@ public class MakeNonogramPlate : MonoBehaviour
 
         currentNonoBlockPlateInfoData = nonoBlockPlateInfoData;
 
-        horizonBlockNum = (int)Mathf.Sqrt(nonoBlockPlateInfoData.nonoBlockPlateInfoData.Count);
-        verticalBlockNum = (int)Mathf.Sqrt(nonoBlockPlateInfoData.nonoBlockPlateInfoData.Count);
+        lineBlockNum = (int)Mathf.Sqrt(nonoBlockPlateInfoData.nonoBlockPlateInfoData.Count);
+        lineBlockNum = (int)Mathf.Sqrt(nonoBlockPlateInfoData.nonoBlockPlateInfoData.Count);
 
         NonoBlock nonoBlock;
         RectTransform backgroundPlateRectTrans = backgroundPlate.GetComponent<RectTransform>();
@@ -86,8 +82,8 @@ public class MakeNonogramPlate : MonoBehaviour
         horizonLength = backgroundPlateRectTrans.sizeDelta.x;
         verticalLength = backgroundPlateRectTrans.sizeDelta.y;
 
-        float horizonInterval = horizonLength / (float)horizonBlockNum;
-        float verticalInterval = verticalLength / (float)verticalBlockNum;
+        float horizonInterval = horizonLength / (float)lineBlockNum;
+        float verticalInterval = verticalLength / (float)lineBlockNum;
 
         float horizonOffset = (horizonInterval - horizonLength) * 0.5f;
         float verticalOffset = (-verticalInterval + verticalLength) * 0.5f;
@@ -95,17 +91,19 @@ public class MakeNonogramPlate : MonoBehaviour
         float innerBlockWidth = horizonInterval - lineThicknessValue;
         float innerBlockHeight = verticalInterval - lineThicknessValue;
 
-        for (int i = 0; i < verticalBlockNum; i++)
+        for (int i = 0; i < lineBlockNum; i++)
         {
-            for (int j = 0; j < horizonBlockNum; j++)
+            for (int j = 0; j < lineBlockNum; j++)
             {
-                nonoBlock = allBlockList[i * horizonBlockNum + j];
+                nonoBlock = allBlockList[i * lineBlockNum + j];
                 nonoBlock.Init(new Vector2(innerBlockWidth, innerBlockHeight), new Vector2(horizonInterval, verticalInterval), 
                     new Vector2(horizonInterval * j + horizonOffset, -verticalInterval * i + verticalOffset), j, i);
                 nonoBlockList.Add(nonoBlock);
                 nonoBlock.gameObject.SetActive(true);
             }
         }
+
+        playHintUI.MakeHintUI(nonoBlockPlateInfoData, nonoBlockList);
     }
 
     //MouseButtonDown
@@ -167,7 +165,7 @@ public class MakeNonogramPlate : MonoBehaviour
     private void SetSelectedBlockList(bool xDirection, int selectBlockNum)
     {
         touchSelectBlockList.Clear();
-        int startCord = touchSelectFirstBlock.GetCord().X + horizonBlockNum * touchSelectFirstBlock.GetCord().Y;
+        int startCord = touchSelectFirstBlock.GetCord().X + lineBlockNum * touchSelectFirstBlock.GetCord().Y;
 
         if (xDirection)
         {
@@ -198,7 +196,7 @@ public class MakeNonogramPlate : MonoBehaviour
                 selectBlockNum += 1;
                 for (int i = 0; i < selectBlockNum; i++)
                 {
-                    touchSelectBlockList.Add(nonoBlockList[startCord + horizonBlockNum * i]);
+                    touchSelectBlockList.Add(nonoBlockList[startCord + lineBlockNum * i]);
                 }
             }
             else
@@ -206,7 +204,7 @@ public class MakeNonogramPlate : MonoBehaviour
                 selectBlockNum -= 1;
                 for (int i = 0; i > selectBlockNum; i--)
                 {
-                    touchSelectBlockList.Add(nonoBlockList[startCord + horizonBlockNum * i]);
+                    touchSelectBlockList.Add(nonoBlockList[startCord + lineBlockNum * i]);
                 }
             }
 

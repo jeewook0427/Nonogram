@@ -72,6 +72,9 @@ public class NonoBlock : MonoBehaviour
         innerImage.color = changeColor;
     }
 
+    public Vector2 GetWorldPosition() { return outRectTransform.position; }
+    public Vector2 GetLocalPosition() { return outRectTransform.localPosition; }
+    public Vector2 GetSizeVector() { return outRectTransform.sizeDelta; }
     public bool GetBlockState() { return isBlockFilled; }
     public Cord GetCord() { return cord; }
 }
