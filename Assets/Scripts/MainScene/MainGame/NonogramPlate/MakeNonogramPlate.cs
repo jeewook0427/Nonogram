@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -8,10 +9,13 @@ using UnityEngine;
 public class MakeNonogramPlate : MonoBehaviour
 {
     [SerializeField]
+    private NonoBlock nonoBlockPrefab;
+
+    [SerializeField]
     private PlayHintUI playHintUI;
 
     [SerializeField]
-    private NonoBlock nonoBlockPrefab;
+    private PuzzleVerifier puzzleVerifier;
 
     [SerializeField]
     private Transform backgroundPlate;
@@ -27,6 +31,7 @@ public class MakeNonogramPlate : MonoBehaviour
     private float lineThicknessValue = 4;
 
     private List<NonoBlock> nonoBlockList = new List<NonoBlock>();
+    private List<int> userAnswerList = new List<int>();
     private NonoBlock touchSelectFirstBlock;
     private NonoBlock currentBlock;
     private NonoBlock previousBlock;
@@ -36,7 +41,7 @@ public class MakeNonogramPlate : MonoBehaviour
 
     private int lineBlockNum;
 
-    private bool firstBlockState;
+    private int firstBlockState;
 
     void Awake()
     {
@@ -44,8 +49,15 @@ public class MakeNonogramPlate : MonoBehaviour
     }
     public void Init()
     {
+        BindDelegate();
+
         playHintUI.Init();
         MakeNonoBlocks();
+    }
+    public void BindDelegate()
+    {
+        puzzleVerifier.MakeHorizonAnswerListDelegate = playHintUI.MakeHorizonAnswerList;
+        puzzleVerifier.MakeVerticalAnswerListDelegate = playHintUI.MakeVerticalAnswerList;
     }
 
     public void MakeNonoBlocks()
@@ -99,6 +111,7 @@ public class MakeNonogramPlate : MonoBehaviour
                 nonoBlock.Init(new Vector2(innerBlockWidth, innerBlockHeight), new Vector2(horizonInterval, verticalInterval), 
                     new Vector2(horizonInterval * j + horizonOffset, -verticalInterval * i + verticalOffset), j, i);
                 nonoBlockList.Add(nonoBlock);
+                userAnswerList.Add(0); // 유저정답 초기값 0을 넣어준다.
                 nonoBlock.gameObject.SetActive(true);
             }
         }
@@ -112,7 +125,7 @@ public class MakeNonogramPlate : MonoBehaviour
         touchSelectFirstBlock = selectBlock;
         firstBlockState = touchSelectFirstBlock.GetBlockState();
         SetSelectedBlockList(true, 0);
-        ChangeSelectedBlocksState(!firstBlockState);
+        ChangeSelectedBlocksState(Math.Abs(firstBlockState - 1));
     }
 
     //MouseButton
@@ -139,7 +152,7 @@ public class MakeNonogramPlate : MonoBehaviour
                 SetSelectedBlockList(true, SelectedBlockNum);
             }
 
-            ChangeSelectedBlocksState(!firstBlockState);
+            ChangeSelectedBlocksState(Math.Abs(firstBlockState - 1));
         }
 
         previousBlock = currentBlock;
@@ -152,13 +165,30 @@ public class MakeNonogramPlate : MonoBehaviour
         touchSelectFirstBlock = null;
         previousBlock = null;
         currentBlock = null;
+
+        // 컨트롤이 끝난 후 유저 정답 저장
+        SynchronizeUserAnswer();
+        bool CheckAnswer = puzzleVerifier.CheckUserAnswer(userAnswerList, playHintUI.HorizonHintUITextList, playHintUI.VerticalHintUITextList);
+
+        Debug.Log(CheckAnswer);
     }
 
-    private void ChangeSelectedBlocksState(bool fillBlock)
+    private void SynchronizeUserAnswer()
+    {
+        for (int i = 0; i < lineBlockNum; i++)
+        {
+            for (int j = 0; j < lineBlockNum; j++)
+            {
+                userAnswerList[i * lineBlockNum + j] = nonoBlockList[i * lineBlockNum + j].GetBlockState();
+            }
+        }     
+    }
+
+    private void ChangeSelectedBlocksState(int blockState)
     {
         foreach (var block in touchSelectBlockList)
         {
-            block.ChangeBlockState(fillBlock);
+            block.ChangeBlockState(blockState);
         }
     }
 

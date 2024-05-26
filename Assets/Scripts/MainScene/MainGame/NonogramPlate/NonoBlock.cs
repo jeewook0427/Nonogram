@@ -22,7 +22,7 @@ public class NonoBlock : MonoBehaviour
     Color whiteColor = Color.white;
     Color blackColor = Color.black;
 
-    bool isBlockFilled;
+    int blockState;
     Cord cord;
 
     private void Awake()
@@ -48,15 +48,15 @@ public class NonoBlock : MonoBehaviour
         cord.X = cordX;
         cord.Y = cordY;
 
-        isBlockFilled = false;
+        blockState = 0;
         SetBlockColor(whiteColor);
     }
 
-    public void ChangeBlockState(bool fillBlock)
+    public void ChangeBlockState(int innerBlockState)
     {
-        isBlockFilled = fillBlock;
+        blockState = innerBlockState;
 
-        if (isBlockFilled)
+        if (blockState == 1)
         {
            SetBlockColor(blackColor);
         }
@@ -75,6 +75,6 @@ public class NonoBlock : MonoBehaviour
     public Vector2 GetWorldPosition() { return outRectTransform.position; }
     public Vector2 GetLocalPosition() { return outRectTransform.localPosition; }
     public Vector2 GetSizeVector() { return outRectTransform.sizeDelta; }
-    public bool GetBlockState() { return isBlockFilled; }
+    public int GetBlockState() { return blockState; }
     public Cord GetCord() { return cord; }
 }

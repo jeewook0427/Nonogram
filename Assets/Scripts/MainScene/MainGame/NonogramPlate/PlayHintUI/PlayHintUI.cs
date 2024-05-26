@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,8 @@ public class PlayHintUI : MonoBehaviour
     
     [HideInInspector]
     public List<List<HintUIText>> VerticalHintUITextList = new List<List<HintUIText>>();
+
+    int hintTextIndex;
     private void Awake()
     {
         for (int i = 0; i < 500; i++)
@@ -30,126 +33,153 @@ public class PlayHintUI : MonoBehaviour
         {
             hintUITextList[i].gameObject.SetActive(false);
         }
+
+        HorizonHintUITextList = new List<List<HintUIText>>();
+        VerticalHintUITextList = new List<List<HintUIText>>();
+
+        hintTextIndex = 0;
     }
 
     public void MakeHintUI(NonoBlockPlateInfoData nonoBlockPlateInfoData, List<NonoBlock> nonoBlockList)
     {
-        int hitTextIndex = 0;
-        int lineBlockNum = (int)Mathf.Sqrt(nonoBlockPlateInfoData.nonoBlockPlateInfoData.Count);
+        HorizonHintUITextList = MakeHorizonHintUITextList(nonoBlockPlateInfoData.nonoBlockPlateInfoData);
+        VerticalHintUITextList = MakeVerticalHintUITextList(nonoBlockPlateInfoData.nonoBlockPlateInfoData);
+        SetTextPosition(nonoBlockList);
+    }
 
-        List<int> tmpNonoBlockPlateInfoData = nonoBlockPlateInfoData.nonoBlockPlateInfoData;
+    public List<List<T>> MakeHorizonHintList<T>(List<int> nonoBlockPlateInfo, Func<int, int, T> createHint)
+    {
+        int lineBlockNum = (int)Mathf.Sqrt(nonoBlockPlateInfo.Count);
+
+        List<List<T>> InnerHintList = new List<List<T>>();
         int textValue = 0;
         int checkEmpty = 0;
 
-        //가로 UI만들기
+        // 가로 UI 만들기
         for (int i = 0; i < lineBlockNum; i++)
         {
-            List<HintUIText> tmpTextList = new List<HintUIText>();
+            List<T> tmpTextList = new List<T>();
 
             for (int j = 0; j < lineBlockNum; j++)
             {
-                if (tmpNonoBlockPlateInfoData[j + i * lineBlockNum] == 0)
+                if (nonoBlockPlateInfo[i * lineBlockNum + ( lineBlockNum - 1) - j] == 0)
                 {
                     checkEmpty++;
                     if (textValue != 0)
                     {
-                        HintUIText InnerHintUIText = hintUITextList[hitTextIndex];
-                        InnerHintUIText.SetText(textValue);
-                        InnerHintUIText.gameObject.SetActive(true);
-                        tmpTextList.Add(InnerHintUIText);
-                        hitTextIndex++;
+                        tmpTextList.Add(createHint(hintTextIndex, textValue));
+                        hintTextIndex++;
                         textValue = 0;
                     }
-
-                    else
-                    {
-                        if(checkEmpty == lineBlockNum)
-                        {
-                            HintUIText InnerHintUIText = hintUITextList[hitTextIndex];
-                            InnerHintUIText.SetText(0);
-                            InnerHintUIText.gameObject.SetActive(true);
-                            tmpTextList.Add(InnerHintUIText);
-                            hitTextIndex++;
-                        }
-                    }
-                   
-                }
-
-                else
-                {
-                    textValue++;
-                    checkEmpty = 0;
-
-                    if (j == lineBlockNum - 1)
-                    {
-                        HintUIText InnerHintUIText = hintUITextList[hitTextIndex];
-                        InnerHintUIText.SetText(textValue);
-                        InnerHintUIText.gameObject.SetActive(true);
-                        tmpTextList.Add(InnerHintUIText);
-                        hitTextIndex++;
-                        textValue = 0;
-                    }
-                }
-            }
-
-            HorizonHintUITextList.Add(tmpTextList);
-        }
-
-        //세로 UI만들기
-        for (int i = 0; i < lineBlockNum; i++)
-        {
-            List<HintUIText> tmpTextList = new List<HintUIText>();
-
-            for (int j = 0; j < lineBlockNum; j++)
-            {
-                if (tmpNonoBlockPlateInfoData[(lineBlockNum - 1 - j) * lineBlockNum + i] == 0)
-                {
-                    checkEmpty++;
-                    if (textValue != 0)
-                    {
-                        HintUIText InnerHintUIText = hintUITextList[hitTextIndex];
-                        InnerHintUIText.SetText(textValue);
-                        InnerHintUIText.gameObject.SetActive(true);
-                        tmpTextList.Add(InnerHintUIText);
-                        hitTextIndex++;
-                        textValue = 0;
-                    }
-
                     else
                     {
                         if (checkEmpty == lineBlockNum)
                         {
-                            HintUIText InnerHintUIText = hintUITextList[hitTextIndex];
-                            InnerHintUIText.SetText(0);
-                            InnerHintUIText.gameObject.SetActive(true);
-                            tmpTextList.Add(InnerHintUIText);
-                            hitTextIndex++;
+                            tmpTextList.Add(createHint(hintTextIndex, 0));
+                            hintTextIndex++;
                         }
                     }
                 }
-
                 else
                 {
                     textValue++;
-
                     checkEmpty = 0;
 
                     if (j == lineBlockNum - 1)
                     {
-                        HintUIText InnerHintUIText = hintUITextList[hitTextIndex];
-                        InnerHintUIText.SetText(textValue);
-                        InnerHintUIText.gameObject.SetActive(true);
-                        tmpTextList.Add(InnerHintUIText);
-                        hitTextIndex++;
+                        tmpTextList.Add(createHint(hintTextIndex, textValue));
+                        hintTextIndex++;
                         textValue = 0;
                     }
                 }
             }
 
-            VerticalHintUITextList.Add(tmpTextList);
+            InnerHintList.Add(tmpTextList);
         }
 
-        SetTextPosition(nonoBlockList);
+        return InnerHintList;
+    }
+
+    public List<List<HintUIText>> MakeHorizonHintUITextList(List<int> nonoBlockPlateInfo)
+    {
+        return MakeHorizonHintList(nonoBlockPlateInfo, (index, value) => SetHintUIText(index, value));
+    }
+
+    public List<List<int>> MakeHorizonAnswerList(List<int> nonoBlockPlateInfo)
+    {
+        return MakeHorizonHintList(nonoBlockPlateInfo, (index, value) => value);
+
+    }
+    public List<List<T>> MakeVerticalHintList<T>(List<int> nonoBlockPlateInfo, Func<int, int, T> createHint)
+    {
+        int lineBlockNum = (int)Mathf.Sqrt(nonoBlockPlateInfo.Count);
+
+        List<List<T>> InnerHintList = new List<List<T>>();
+        int textValue = 0;
+        int checkEmpty = 0;
+
+        // 세로 UI 만들기
+        for (int i = 0; i < lineBlockNum; i++)
+        {
+            List<T> tmpTextList = new List<T>();
+
+            for (int j = 0; j < lineBlockNum; j++)
+            {
+                if (nonoBlockPlateInfo[(lineBlockNum - 1 - j) * lineBlockNum + i] == 0)
+                {
+                    checkEmpty++;
+                    if (textValue != 0)
+                    {
+                        tmpTextList.Add(createHint(hintTextIndex, textValue));
+                        hintTextIndex++;
+                        textValue = 0;
+                    }
+                    else
+                    {
+                        if (checkEmpty == lineBlockNum)
+                        {
+                            tmpTextList.Add(createHint(hintTextIndex, 0));
+                            hintTextIndex++;
+                        }
+                    }
+                }
+                else
+                {
+                    textValue++;
+                    checkEmpty = 0;
+
+                    if (j == lineBlockNum - 1)
+                    {
+                        tmpTextList.Add(createHint(hintTextIndex, textValue));
+                        hintTextIndex++;
+                        textValue = 0;
+                    }
+                }
+            }
+
+            InnerHintList.Add(tmpTextList);
+        }
+
+        return InnerHintList;
+    }
+
+    public List<List<HintUIText>> MakeVerticalHintUITextList(List<int> nonoBlockPlateInfo)
+    {
+        return MakeVerticalHintList(nonoBlockPlateInfo, (index, value) => SetHintUIText(index, value));
+    }
+
+    public List<List<int>> MakeVerticalAnswerList(List<int> nonoBlockPlateInfo)
+    {
+        return MakeVerticalHintList(nonoBlockPlateInfo, (index, value) => value);
+    }
+
+    private HintUIText SetHintUIText(int hintTextIndex, int textValue)
+    {
+        HintUIText InnerHintUIText = hintUITextList[hintTextIndex];
+        InnerHintUIText.SetText(textValue);
+        InnerHintUIText.gameObject.SetActive(true);
+
+        return InnerHintUIText;
     }
 
     public void SetTextPosition(List<NonoBlock> nonoBlockList)
@@ -192,7 +222,7 @@ public class PlayHintUI : MonoBehaviour
                 }
                 
                 else
-                    VerticalHintUITextList[i][j].SetLocalPosition(previousTextLocalPosition - new Vector2(0, Constants.HINTUITEXTOFFSET) * (j + 1));
+                    VerticalHintUITextList[i][j].SetLocalPosition(previousTextLocalPosition + new Vector2(0, Constants.HINTUITEXTOFFSET) * (j + 1));
             }
         }
     }

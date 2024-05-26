@@ -8,6 +8,8 @@ public class HintUIText : MonoBehaviour
     private RectTransform rectTransform;
 
     private Text text;
+    private bool isCorrect;
+    private int textValue;
     private void Awake()
     {
         if (!rectTransform)
@@ -21,14 +23,27 @@ public class HintUIText : MonoBehaviour
 
     }
 
-    public void ChangeTextColor()
+    public void ChangeState(bool innerIsCorrect)
     {
-        text.color = Color.white;
+        isCorrect = innerIsCorrect;
+
+        if(isCorrect)
+        {
+            text.color = Color.gray;
+        }
+        
+        else
+            text.color = Color.black;
     }
 
-    public void SetText(int value) { text.text = value.ToString(); }
+    public void SetText(int value) 
+    {
+        textValue = value;
+        text.text = textValue.ToString(); 
+    }
 
     public void SetLocalPosition(Vector2 position) { rectTransform.localPosition = position; }
-
     public Vector2 GetLocalPosition() { return rectTransform.localPosition; }
+    public bool GetIsCorrect() { return isCorrect; }
+    public int GetTextValue() { return textValue; }
 }
