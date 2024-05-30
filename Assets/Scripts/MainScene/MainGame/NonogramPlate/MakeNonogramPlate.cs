@@ -25,27 +25,33 @@ public class MakeNonogramPlate : MonoBehaviour
 
     //----------------------------------------------------------
 
+    [HideInInspector]
+    public List<int> userAnswerList = new List<int>();
+
     private float horizonLength = 800;
     private float verticalLength = 800;
+    private float lineThicknessValue = 3;
 
-    private float lineThicknessValue = 4;
+    private List<NonoBlock> nonoBlockList           = new List<NonoBlock>();
+    private List<NonoBlock> touchSelectBlockList    = new List<NonoBlock>();
+    private List<NonoBlock> allBlockList            = new List<NonoBlock>();
 
-    private List<NonoBlock> nonoBlockList = new List<NonoBlock>();
-    private List<int> userAnswerList = new List<int>();
     private NonoBlock touchSelectFirstBlock;
     private NonoBlock currentBlock;
     private NonoBlock previousBlock;
-    private List<NonoBlock> touchSelectBlockList = new List<NonoBlock>();
-    private List<NonoBlock> allBlockList = new List<NonoBlock>();
+   
     private NonoBlockPlateInfoData currentNonoBlockPlateInfoData;
 
-    private int lineBlockNum;
+    private RectTransform rectTransform;
 
+    private int lineBlockNum;
     private int firstBlockState;
+
+    private bool isMakerPlate;
 
     void Awake()
     {
-
+        rectTransform = GetComponent<RectTransform>();
     }
     public void Init()
     {
@@ -76,7 +82,7 @@ public class MakeNonogramPlate : MonoBehaviour
     }
 
     //노노그램 게임판을 만든다.
-    public void MakeNonoGram(NonoBlockPlateInfoData nonoBlockPlateInfoData)
+    public void MakeNonoGram(NonoBlockPlateInfoData nonoBlockPlateInfoData, int innerLineBlockNum = 0, bool innerIsMakerPlate = false)
     {
         for (int i = 0; i < Constants.MAXBLOCKCOUNT_Y * Constants.MAXBLOCKCOUNT_X; i++)
         {
@@ -85,38 +91,89 @@ public class MakeNonogramPlate : MonoBehaviour
 
         currentNonoBlockPlateInfoData = nonoBlockPlateInfoData;
 
-        lineBlockNum = (int)Mathf.Sqrt(nonoBlockPlateInfoData.nonoBlockPlateInfoData.Count);
-        lineBlockNum = (int)Mathf.Sqrt(nonoBlockPlateInfoData.nonoBlockPlateInfoData.Count);
+        if (nonoBlockPlateInfoData == null && !innerIsMakerPlate)
+            return;
 
+        if(innerIsMakerPlate)
+        {
+            isMakerPlate = innerIsMakerPlate;
+            lineBlockNum = innerLineBlockNum;
+        }
+
+        else
+        {
+            lineBlockNum = (int)Mathf.Sqrt(nonoBlockPlateInfoData.nonoBlockPlateInfo.Count);
+            lineBlockNum = (int)Mathf.Sqrt(nonoBlockPlateInfoData.nonoBlockPlateInfo.Count);
+        }
+            
         NonoBlock nonoBlock;
         RectTransform backgroundPlateRectTrans = backgroundPlate.GetComponent<RectTransform>();
 
-        horizonLength = backgroundPlateRectTrans.sizeDelta.x;
-        verticalLength = backgroundPlateRectTrans.sizeDelta.y;
+        horizonLength = Constants.BACKGROUNDWIDTH;
+        verticalLength = Constants.BACKGROUNDWIDTH;
+
+        float additionalLineThickness = 8f;
 
         float horizonInterval = horizonLength / (float)lineBlockNum;
         float verticalInterval = verticalLength / (float)lineBlockNum;
 
-        float horizonOffset = (horizonInterval - horizonLength) * 0.5f;
-        float verticalOffset = (-verticalInterval + verticalLength) * 0.5f;
+        float horizonOffset = (horizonLength - horizonInterval) * 0.5f;
+        float verticalOffset = (verticalLength - verticalInterval) * 0.5f;
 
         float innerBlockWidth = horizonInterval - lineThicknessValue;
         float innerBlockHeight = verticalInterval - lineThicknessValue;
+        float additionalWidth = (lineBlockNum / 5 + 1) * additionalLineThickness + 2 * lineThicknessValue;
+
+        Vector2 preBlockPosition = new Vector2(0, -(lineThicknessValue + additionalLineThickness)) + new Vector2(0, verticalOffset + additionalWidth);
+        Vector2 currentBlockPosition = Vector2.zero;
 
         for (int i = 0; i < lineBlockNum; i++)
         {
+            preBlockPosition.x = ((lineThicknessValue + additionalLineThickness) - horizonOffset - additionalWidth);
+            
+            if(i !=0)
+                preBlockPosition += new Vector2(0, -verticalInterval);
+
+            if ((i + 1) % 5 == 1 && i != 0)
+                preBlockPosition += new Vector2(0, -additionalLineThickness);
+
             for (int j = 0; j < lineBlockNum; j++)
             {
                 nonoBlock = allBlockList[i * lineBlockNum + j];
-                nonoBlock.Init(new Vector2(innerBlockWidth, innerBlockHeight), new Vector2(horizonInterval, verticalInterval), 
-                    new Vector2(horizonInterval * j + horizonOffset, -verticalInterval * i + verticalOffset), j, i);
+               
+                if((j +1) % 5 == 1 && j != 0)
+                {
+                    preBlockPosition += new Vector2(additionalLineThickness, 0);
+                }
+
+                if (j == 0)
+                {
+                    currentBlockPosition = preBlockPosition; 
+                }
+                  
+                else
+                {
+                   currentBlockPosition = preBlockPosition + new Vector2(horizonInterval, 0);
+                }
+
+                nonoBlock.Init(new Vector2(innerBlockWidth, innerBlockHeight), new Vector2(horizonInterval - lineThicknessValue, verticalInterval - lineThicknessValue),
+                  currentBlockPosition, j, i);
+
                 nonoBlockList.Add(nonoBlock);
                 userAnswerList.Add(0); // 유저정답 초기값 0을 넣어준다.
+
+                preBlockPosition = currentBlockPosition;
                 nonoBlock.gameObject.SetActive(true);
             }
         }
 
-        playHintUI.MakeHintUI(nonoBlockPlateInfoData, nonoBlockList);
+        backgroundPlateRectTrans.sizeDelta = new Vector2(horizonLength + additionalWidth, verticalLength + additionalWidth);
+        backgroundPlateRectTrans.anchoredPosition = new Vector2(-additionalWidth * 0.5f, additionalWidth * 0.5f);
+
+        rectTransform.anchoredPosition = new Vector2(-(horizonLength) * 0.5f - 20f ,100f);
+
+        if (!innerIsMakerPlate)
+            playHintUI.MakeHintUI(nonoBlockPlateInfoData, nonoBlockList);
     }
 
     //MouseButtonDown
@@ -168,9 +225,11 @@ public class MakeNonogramPlate : MonoBehaviour
 
         // 컨트롤이 끝난 후 유저 정답 저장
         SynchronizeUserAnswer();
-        bool CheckAnswer = puzzleVerifier.CheckUserAnswer(userAnswerList, playHintUI.HorizonHintUITextList, playHintUI.VerticalHintUITextList);
 
-        Debug.Log(CheckAnswer);
+        if(isMakerPlate)
+           return;
+        
+        bool CheckAnswer = puzzleVerifier.CheckUserAnswer(userAnswerList, playHintUI.HorizonHintUITextList, playHintUI.VerticalHintUITextList);
     }
 
     private void SynchronizeUserAnswer()

@@ -12,12 +12,13 @@ public class NonoBlock : MonoBehaviour
         public int Y;
     }
 
-    [SerializeField]
-    private GameObject innterBlock;
+   //[SerializeField]
+   // private GameObject tickLine;
 
-    Image innerImage;
-    RectTransform outRectTransform;
-    RectTransform innerRectTransform;
+    Image image;
+   // RectTransform outRectTransform;
+    RectTransform rectTransform;
+   // RectTransform[] tickLineRectTransform;
 
     Color whiteColor = Color.white;
     Color blackColor = Color.black;
@@ -27,29 +28,36 @@ public class NonoBlock : MonoBehaviour
 
     private void Awake()
     {
-        if (!innerImage)
-            innerImage = innterBlock.GetComponent<Image>();
+       // if (!innerImage)
+       //     innerImage = innterBlock.GetComponent<Image>();
 
-        if (!outRectTransform)
-            outRectTransform = GetComponent<RectTransform>();
+       // if (!outRectTransform)
+         //   outRectTransform = GetComponent<RectTransform>();
 
-        if (!innerRectTransform)
-            innerRectTransform = innterBlock.GetComponent<RectTransform>();
+       // if (!innerRectTransform)
+         //   innerRectTransform = innterBlock.GetComponent<RectTransform>();
+
+        //tickLineRectTransform = tickLine.GetComponentsInChildren<RectTransform>();
+
+        rectTransform = GetComponent<RectTransform>();
+        image = GetComponent<Image>();
     }
 
     public void Init(Vector2 innerSizeDelta, Vector2 outSizeDelta, Vector2 position, int cordX, int cordY)
     {
+        // tickLine.SetActive(false);
         //내부 블럭 사이즈 줄이기 (가장자리 선 만들기위함)
-        innerRectTransform.sizeDelta = innerSizeDelta;
+        rectTransform.sizeDelta = innerSizeDelta;
         //외부 블럭 사이즈는 간격에 맞게
-        outRectTransform.sizeDelta = outSizeDelta;
-        outRectTransform.transform.localPosition = position;
+        rectTransform.sizeDelta = outSizeDelta;
+        rectTransform.transform.localPosition = position;
 
         cord.X = cordX;
         cord.Y = cordY;
 
         blockState = 0;
         SetBlockColor(whiteColor);
+        //SetTickLine();
     }
 
     public void ChangeBlockState(int innerBlockState)
@@ -69,12 +77,87 @@ public class NonoBlock : MonoBehaviour
 
     private void SetBlockColor(Color changeColor)
     {
-        innerImage.color = changeColor;
+        image.color = changeColor;
     }
 
-    public Vector2 GetWorldPosition() { return outRectTransform.position; }
-    public Vector2 GetLocalPosition() { return outRectTransform.localPosition; }
-    public Vector2 GetSizeVector() { return outRectTransform.sizeDelta; }
+    //private void SetTickLine()
+    //{
+    //    for(int i = 0; i< tickLineRectTransform.Length; i++)
+    //    {
+    //        tickLineRectTransform[i].gameObject.SetActive(false);
+    //    }
+
+    //    if ((cord.X + 1) % 5 != 0 && (cord.Y + 1) % 5 != 0 && (cord.X) % 5 != 0 && (cord.Y) % 5 != 0)
+    //    {
+    //        return;
+    //    }
+
+    //    if ((cord.X + 1) % 5 == 0)
+    //    {
+    //        Vector2 sizeDelta = Vector2.zero;
+
+    //        sizeDelta.x = (outRectTransform.sizeDelta.x - innerRectTransform.sizeDelta.x) * 0.5f;
+    //        sizeDelta.y = outRectTransform.sizeDelta.y;
+            
+    //        float positionX = (outRectTransform.sizeDelta.x - sizeDelta.x) * 0.5f;
+    //        Vector2 position = new Vector2(positionX, 0);
+
+    //        tickLineRectTransform[1].sizeDelta = sizeDelta;
+    //        tickLineRectTransform[1].localPosition = position;
+    //        tickLineRectTransform[1].gameObject.SetActive(true);
+    //    }
+
+    //    if((cord.X) % 5 == 0)
+    //    {
+    //        Vector2 sizeDelta = Vector2.zero;
+
+    //        sizeDelta.x = (outRectTransform.sizeDelta.x - innerRectTransform.sizeDelta.x) * 0.5f;
+    //        sizeDelta.y = outRectTransform.sizeDelta.y;
+
+    //        float positionX = (outRectTransform.sizeDelta.x - sizeDelta.x) * 0.5f;
+    //        Vector2 position = new Vector2(positionX, 0);
+
+    //        tickLineRectTransform[1].sizeDelta = sizeDelta;
+    //        tickLineRectTransform[1].localPosition = -position;
+    //        tickLineRectTransform[1].gameObject.SetActive(true);
+    //    }
+
+    //    if ((cord.Y) % 5 == 0)
+    //    {
+    //        Vector2 sizeDelta = Vector2.zero;
+
+    //        sizeDelta.x = outRectTransform.sizeDelta.x;
+    //        sizeDelta.y = (outRectTransform.sizeDelta.y - innerRectTransform.sizeDelta.y) * 0.5f;
+            
+    //        float positionY = (outRectTransform.sizeDelta.y - sizeDelta.y) * 0.5f;
+    //        Vector2 position = new Vector2(0, positionY);
+
+    //        tickLineRectTransform[2].sizeDelta = sizeDelta;
+    //        tickLineRectTransform[2].localPosition = -position;
+    //        tickLineRectTransform[2].gameObject.SetActive(true);
+    //    }
+
+    //    if ((cord.Y + 1) % 5 == 0)
+    //    {
+    //        Vector2 sizeDelta = Vector2.zero;
+
+    //        sizeDelta.x = outRectTransform.sizeDelta.x;
+    //        sizeDelta.y = (outRectTransform.sizeDelta.y - innerRectTransform.sizeDelta.y) * 0.5f;
+
+    //        float positionY = (outRectTransform.sizeDelta.y - sizeDelta.y) * 0.5f;
+    //        Vector2 position = new Vector2(0, positionY);
+
+    //        tickLineRectTransform[2].sizeDelta = sizeDelta;
+    //        tickLineRectTransform[2].localPosition = position;
+    //        tickLineRectTransform[2].gameObject.SetActive(true);
+    //    }
+
+    //    tickLine.gameObject.SetActive(true);
+    //}
+
+    public Vector2 GetWorldPosition() { return rectTransform.position; }
+    public Vector2 GetLocalPosition() { return rectTransform.localPosition; }
+    public Vector2 GetSizeVector() { return rectTransform.sizeDelta; }
     public int GetBlockState() { return blockState; }
     public Cord GetCord() { return cord; }
 }

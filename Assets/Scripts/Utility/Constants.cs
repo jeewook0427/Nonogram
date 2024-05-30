@@ -10,5 +10,7 @@ public static class Constants
     public static readonly int MAXBLOCKCOUNT_Y = 40;
 
     public static readonly float HINTUIBLOCKOFFSET = 40.0f;
-    public static readonly float HINTUITEXTOFFSET = 20.0f;
+    public static readonly float HINTUITEXTOFFSET = 40.0f;
+
+    public static readonly float BACKGROUNDWIDTH = 800.0f;
 }

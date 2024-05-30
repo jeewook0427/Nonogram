@@ -42,8 +42,8 @@ public class PlayHintUI : MonoBehaviour
 
     public void MakeHintUI(NonoBlockPlateInfoData nonoBlockPlateInfoData, List<NonoBlock> nonoBlockList)
     {
-        HorizonHintUITextList = MakeHorizonHintUITextList(nonoBlockPlateInfoData.nonoBlockPlateInfoData);
-        VerticalHintUITextList = MakeVerticalHintUITextList(nonoBlockPlateInfoData.nonoBlockPlateInfoData);
+        HorizonHintUITextList = MakeHorizonHintUITextList(nonoBlockPlateInfoData.nonoBlockPlateInfo);
+        VerticalHintUITextList = MakeVerticalHintUITextList(nonoBlockPlateInfoData.nonoBlockPlateInfo);
         SetTextPosition(nonoBlockList);
     }
 
@@ -200,12 +200,16 @@ public class PlayHintUI : MonoBehaviour
             {
                 if (j == 0)
                 {
-                    HorizonHintUITextList[i][j].SetLocalPosition(blockPosition - new Vector2(Constants.HINTUIBLOCKOFFSET + blockSize.x, 0) * (j + 1));
+                    HorizonHintUITextList[i][j].SetLocalPosition(blockPosition - new Vector2(Constants.HINTUIBLOCKOFFSET + blockSize.x, 0));
                     previousTextLocalPosition = HorizonHintUITextList[i][j].GetLocalPosition();
                 }
 
                 else
-                    HorizonHintUITextList[i][j].SetLocalPosition(previousTextLocalPosition - new Vector2(Constants.HINTUITEXTOFFSET, 0) * (j + 1));
+                {
+                    HorizonHintUITextList[i][j].SetLocalPosition(previousTextLocalPosition - new Vector2(Constants.HINTUITEXTOFFSET, 0));
+                    previousTextLocalPosition = HorizonHintUITextList[i][j].GetLocalPosition();
+                }
+                    
             }
         }
 
@@ -217,12 +221,16 @@ public class PlayHintUI : MonoBehaviour
             {
                 if(j==0)
                 {
-                    VerticalHintUITextList[i][j].SetLocalPosition(blockPosition + new Vector2(0, Constants.HINTUIBLOCKOFFSET + blockSize.y) * (j + 1));
+                    VerticalHintUITextList[i][j].SetLocalPosition(blockPosition + new Vector2(0, Constants.HINTUIBLOCKOFFSET + blockSize.y));
                     previousTextLocalPosition = VerticalHintUITextList[i][j].GetLocalPosition();
                 }
                 
                 else
-                    VerticalHintUITextList[i][j].SetLocalPosition(previousTextLocalPosition + new Vector2(0, Constants.HINTUITEXTOFFSET) * (j + 1));
+                {
+                    VerticalHintUITextList[i][j].SetLocalPosition(previousTextLocalPosition + new Vector2(0, Constants.HINTUITEXTOFFSET));
+                    previousTextLocalPosition = VerticalHintUITextList[i][j].GetLocalPosition();
+                }
+                    
             }
         }
     }

@@ -13,9 +13,6 @@ public class MainScene : MonoBehaviour
     [SerializeField]
     private Transform MainCanvas;
 
-    [SerializeField]
-    private DataManager fileManager;
-
     private MainGame mainGame;
     private MainUI mainUI; 
  
@@ -23,6 +20,8 @@ public class MainScene : MonoBehaviour
     {
         mainGame = Instantiate(MainGamePrefab, MainCanvas);
         mainUI = Instantiate(MainUIPrefab, MainCanvas);
+
+        DataManager.LoadAllGameData();
     }
     void Start()
     {
@@ -33,6 +32,5 @@ public class MainScene : MonoBehaviour
     {
         mainGame.Init();
         mainUI.Init();
-        fileManager.Init();
     }
 }

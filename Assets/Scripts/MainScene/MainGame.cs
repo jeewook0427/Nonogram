@@ -33,7 +33,7 @@ public class MainGame : MonoBehaviour
 
         BindDelegate();
 
-        makeNonogramPlate.MakeNonoGram(NonoBlockPlateInfo.GetNonoBlockPlateInfoData("Ahhyeon"));
+        makeNonogramPlate.MakeNonoGram(NonoBlockPlateInfo.GetNonoBlockPlateInfoData(10,"questionmark"));
     }
 
     private void BindDelegate()
