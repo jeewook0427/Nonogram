@@ -62,7 +62,7 @@ public class PlayHintUI : MonoBehaviour
 
             for (int j = 0; j < lineBlockNum; j++)
             {
-                if (nonoBlockPlateInfo[i * lineBlockNum + ( lineBlockNum - 1) - j] == 0)
+                if (nonoBlockPlateInfo[i * lineBlockNum + ( lineBlockNum - 1) - j] == (int)BlockState.Empty)
                 {
                     checkEmpty++;
                     if (textValue != 0)
@@ -80,7 +80,7 @@ public class PlayHintUI : MonoBehaviour
                         }
                     }
                 }
-                else
+                else if (nonoBlockPlateInfo[i * lineBlockNum + (lineBlockNum - 1) - j] == (int)BlockState.Filled)
                 {
                     textValue++;
                     checkEmpty = 0;
@@ -125,7 +125,7 @@ public class PlayHintUI : MonoBehaviour
 
             for (int j = 0; j < lineBlockNum; j++)
             {
-                if (nonoBlockPlateInfo[(lineBlockNum - 1 - j) * lineBlockNum + i] == 0)
+                if (nonoBlockPlateInfo[(lineBlockNum - 1 - j) * lineBlockNum + i] == (int)BlockState.Empty)
                 {
                     checkEmpty++;
                     if (textValue != 0)
@@ -143,7 +143,7 @@ public class PlayHintUI : MonoBehaviour
                         }
                     }
                 }
-                else
+                else if (nonoBlockPlateInfo[(lineBlockNum - 1 - j) * lineBlockNum + i] == (int)BlockState.Filled)
                 {
                     textValue++;
                     checkEmpty = 0;

@@ -12,8 +12,8 @@ public class MainGame : MonoBehaviour
     [SerializeField]
     private TouchInput touchInputPrefabs;
 
-    private MakeNonogramPlate makeNonogramPlate;
-    private TouchInput touchInput;
+    public MakeNonogramPlate makeNonogramPlate;
+    public TouchInput touchInput;
 
     void Awake()
     {

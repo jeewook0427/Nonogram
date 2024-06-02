@@ -32,20 +32,22 @@ public class MakeNonogramPlate : MonoBehaviour
     private float verticalLength = 800;
     private float lineThicknessValue = 3;
 
-    private List<NonoBlock> nonoBlockList           = new List<NonoBlock>();
-    private List<NonoBlock> touchSelectBlockList    = new List<NonoBlock>();
-    private List<NonoBlock> allBlockList            = new List<NonoBlock>();
+    private List<NonoBlock> nonoBlockList = new List<NonoBlock>();
+    private List<NonoBlock> touchSelectBlockList = new List<NonoBlock>();
+    private List<NonoBlock> allBlockList = new List<NonoBlock>();
 
     private NonoBlock touchSelectFirstBlock;
     private NonoBlock currentBlock;
     private NonoBlock previousBlock;
-   
+
     private NonoBlockPlateInfoData currentNonoBlockPlateInfoData;
 
     private RectTransform rectTransform;
+    private ButtonState buttonState;
 
     private int lineBlockNum;
-    private int firstBlockState;
+    private BlockState firstBlockState;
+    private BlockState changeBlockState;
 
     private bool isMakerPlate;
 
@@ -59,6 +61,8 @@ public class MakeNonogramPlate : MonoBehaviour
 
         playHintUI.Init();
         MakeNonoBlocks();
+
+        buttonState = ButtonState.Marking;
     }
     public void BindDelegate()
     {
@@ -86,7 +90,7 @@ public class MakeNonogramPlate : MonoBehaviour
     {
         for (int i = 0; i < Constants.MAXBLOCKCOUNT_Y * Constants.MAXBLOCKCOUNT_X; i++)
         {
-            allBlockList[i].gameObject.SetActive(false); 
+            allBlockList[i].gameObject.SetActive(false);
         }
 
         currentNonoBlockPlateInfoData = nonoBlockPlateInfoData;
@@ -94,7 +98,7 @@ public class MakeNonogramPlate : MonoBehaviour
         if (nonoBlockPlateInfoData == null && !innerIsMakerPlate)
             return;
 
-        if(innerIsMakerPlate)
+        if (innerIsMakerPlate)
         {
             isMakerPlate = innerIsMakerPlate;
             lineBlockNum = innerLineBlockNum;
@@ -105,7 +109,7 @@ public class MakeNonogramPlate : MonoBehaviour
             lineBlockNum = (int)Mathf.Sqrt(nonoBlockPlateInfoData.nonoBlockPlateInfo.Count);
             lineBlockNum = (int)Mathf.Sqrt(nonoBlockPlateInfoData.nonoBlockPlateInfo.Count);
         }
-            
+
         NonoBlock nonoBlock;
         RectTransform backgroundPlateRectTrans = backgroundPlate.GetComponent<RectTransform>();
 
@@ -130,8 +134,8 @@ public class MakeNonogramPlate : MonoBehaviour
         for (int i = 0; i < lineBlockNum; i++)
         {
             preBlockPosition.x = ((lineThicknessValue + additionalLineThickness) - horizonOffset - additionalWidth);
-            
-            if(i !=0)
+
+            if (i != 0)
                 preBlockPosition += new Vector2(0, -verticalInterval);
 
             if ((i + 1) % 5 == 1 && i != 0)
@@ -140,23 +144,23 @@ public class MakeNonogramPlate : MonoBehaviour
             for (int j = 0; j < lineBlockNum; j++)
             {
                 nonoBlock = allBlockList[i * lineBlockNum + j];
-               
-                if((j +1) % 5 == 1 && j != 0)
+
+                if ((j + 1) % 5 == 1 && j != 0)
                 {
                     preBlockPosition += new Vector2(additionalLineThickness, 0);
                 }
 
                 if (j == 0)
                 {
-                    currentBlockPosition = preBlockPosition; 
-                }
-                  
-                else
-                {
-                   currentBlockPosition = preBlockPosition + new Vector2(horizonInterval, 0);
+                    currentBlockPosition = preBlockPosition;
                 }
 
-                nonoBlock.Init(new Vector2(innerBlockWidth, innerBlockHeight), new Vector2(horizonInterval - lineThicknessValue, verticalInterval - lineThicknessValue),
+                else
+                {
+                    currentBlockPosition = preBlockPosition + new Vector2(horizonInterval, 0);
+                }
+
+                nonoBlock.Init(new Vector2(innerBlockWidth, innerBlockHeight), new Vector2(innerBlockWidth + 2 * lineThicknessValue, innerBlockHeight + 2 * lineThicknessValue),
                   currentBlockPosition, j, i);
 
                 nonoBlockList.Add(nonoBlock);
@@ -170,7 +174,7 @@ public class MakeNonogramPlate : MonoBehaviour
         backgroundPlateRectTrans.sizeDelta = new Vector2(horizonLength + additionalWidth, verticalLength + additionalWidth);
         backgroundPlateRectTrans.anchoredPosition = new Vector2(-additionalWidth * 0.5f, additionalWidth * 0.5f);
 
-        rectTransform.anchoredPosition = new Vector2(-(horizonLength) * 0.5f - 20f ,100f);
+        rectTransform.anchoredPosition = new Vector2(-(horizonLength) * 0.5f - 20f, 250f);
 
         if (!innerIsMakerPlate)
             playHintUI.MakeHintUI(nonoBlockPlateInfoData, nonoBlockList);
@@ -182,18 +186,21 @@ public class MakeNonogramPlate : MonoBehaviour
         touchSelectFirstBlock = selectBlock;
         firstBlockState = touchSelectFirstBlock.GetBlockState();
         SetSelectedBlockList(true, 0);
-        ChangeSelectedBlocksState(Math.Abs(firstBlockState - 1));
+        SetChangeBlockState();
+        ChangeSelectedBlocksState(changeBlockState);
+        selectBlock.ChangeOutLine(true);
     }
 
     //MouseButton
     public void TouchSelectCurrentBlock(NonoBlock selectBlock)
     {
-        if (!selectBlock)
+        if (!selectBlock || !touchSelectFirstBlock)
         {
             return;
         }
 
         currentBlock = selectBlock;
+
         int SelectedBlockNum;
         if (previousBlock != currentBlock)
         {
@@ -209,15 +216,28 @@ public class MakeNonogramPlate : MonoBehaviour
                 SetSelectedBlockList(true, SelectedBlockNum);
             }
 
-            ChangeSelectedBlocksState(Math.Abs(firstBlockState - 1));
+            ChangeSelectedBlocksState(changeBlockState);
         }
 
         previousBlock = currentBlock;
+
+        for (int i = 0; i < touchSelectBlockList.Count; i++)
+        {
+            touchSelectBlockList[i].ChangeOutLine(true);
+        }
     }
 
     //MouseButtonUp
     public void TouchSelectEndBlock()
     {
+        for (int i = 0; i < touchSelectBlockList.Count; i++)
+        {
+            touchSelectBlockList[i].ChangeOutLine(false);
+        }
+
+        if (touchSelectFirstBlock)
+            touchSelectFirstBlock.ChangeOutLine(false);
+
         touchSelectBlockList.Clear();
         touchSelectFirstBlock = null;
         previousBlock = null;
@@ -226,9 +246,9 @@ public class MakeNonogramPlate : MonoBehaviour
         // 컨트롤이 끝난 후 유저 정답 저장
         SynchronizeUserAnswer();
 
-        if(isMakerPlate)
-           return;
-        
+        if (isMakerPlate)
+            return;
+
         bool CheckAnswer = puzzleVerifier.CheckUserAnswer(userAnswerList, playHintUI.HorizonHintUITextList, playHintUI.VerticalHintUITextList);
     }
 
@@ -238,12 +258,12 @@ public class MakeNonogramPlate : MonoBehaviour
         {
             for (int j = 0; j < lineBlockNum; j++)
             {
-                userAnswerList[i * lineBlockNum + j] = nonoBlockList[i * lineBlockNum + j].GetBlockState();
+                userAnswerList[i * lineBlockNum + j] = (int)nonoBlockList[i * lineBlockNum + j].GetBlockState();
             }
-        }     
+        }
     }
 
-    private void ChangeSelectedBlocksState(int blockState)
+    private void ChangeSelectedBlocksState(BlockState blockState)
     {
         foreach (var block in touchSelectBlockList)
         {
@@ -253,6 +273,12 @@ public class MakeNonogramPlate : MonoBehaviour
 
     private void SetSelectedBlockList(bool xDirection, int selectBlockNum)
     {
+        for (int i = 0; i < touchSelectBlockList.Count; i++)
+        {
+            touchSelectBlockList[i].ChangeBlockState(BlockState.Empty);
+            touchSelectBlockList[i].ChangeOutLine(false);
+        }
+
         touchSelectBlockList.Clear();
         int startCord = touchSelectFirstBlock.GetCord().X + lineBlockNum * touchSelectFirstBlock.GetCord().Y;
 
@@ -298,5 +324,29 @@ public class MakeNonogramPlate : MonoBehaviour
             }
 
         }
+    }
+
+    private void SetChangeBlockState()
+    {
+        if (firstBlockState == BlockState.Filled || firstBlockState == BlockState.Marked)
+        {
+            changeBlockState = BlockState.Empty;
+            return;
+        }
+
+        if(buttonState == ButtonState.Answer)
+        {
+            changeBlockState = BlockState.Filled;
+        }
+
+        else if(buttonState == ButtonState.Marking) 
+        {
+            changeBlockState = BlockState.Marked;
+        }
+    }
+
+    public void ChangeButtonState(ButtonState state)
+    {
+        buttonState = state;
     }
 }

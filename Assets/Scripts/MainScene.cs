@@ -32,5 +32,17 @@ public class MainScene : MonoBehaviour
     {
         mainGame.Init();
         mainUI.Init();
+
+        BindFunction();
+    }
+
+    void BindFunction()
+    {
+        SelectButton[] buttons = mainUI.PlayScreenUI.GetSelectButtons();
+
+        foreach (var button in buttons)
+        {
+            button.ChangeButtonStateDelegate = mainGame.makeNonogramPlate.ChangeButtonState;
+        }
     }
 }

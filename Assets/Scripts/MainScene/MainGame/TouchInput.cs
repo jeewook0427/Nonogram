@@ -109,7 +109,7 @@ public class TouchInput : MonoBehaviour
 
         foreach (var rayResult in raycastResults)
         {
-            nonoBlock = rayResult.gameObject.GetComponent<NonoBlock>();
+            nonoBlock = rayResult.gameObject.GetComponentInParent<NonoBlock>();
 
             if(nonoBlock)
             {

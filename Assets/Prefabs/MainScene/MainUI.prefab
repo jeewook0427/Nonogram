@@ -30,12 +30,12 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3952270532156672834
 MonoBehaviour:
@@ -49,3 +49,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13f759c8d26a2a9469252261c6dc497d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playScreenUIPrefab: {fileID: 906899968513363001, guid: b08e703b22fd34749ac3584fa1a5c2aa, type: 3}
+  PlayScreenUI: {fileID: 0}
