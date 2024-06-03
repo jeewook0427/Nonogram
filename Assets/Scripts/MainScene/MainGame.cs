@@ -28,10 +28,10 @@ public class MainGame : MonoBehaviour
 
     public void Init()
     {
+        BindDelegate();
+
         makeNonogramPlate.Init();
         touchInput.Init(GetComponentInParent<GraphicRaycaster>(), GetComponentInParent<EventSystem>());
-
-        BindDelegate();
 
         makeNonogramPlate.MakeNonoGram(NonoBlockPlateInfo.GetNonoBlockPlateInfoData(10,"questionmark"));
     }

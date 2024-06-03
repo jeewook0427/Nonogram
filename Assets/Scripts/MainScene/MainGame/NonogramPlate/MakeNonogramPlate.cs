@@ -39,6 +39,7 @@ public class MakeNonogramPlate : MonoBehaviour
     private NonoBlock touchSelectFirstBlock;
     private NonoBlock currentBlock;
     private NonoBlock previousBlock;
+    private NonoBlock lastBlock;
 
     private NonoBlockPlateInfoData currentNonoBlockPlateInfoData;
 
@@ -62,7 +63,7 @@ public class MakeNonogramPlate : MonoBehaviour
         playHintUI.Init();
         MakeNonoBlocks();
 
-        buttonState = ButtonState.Marking;
+        buttonState = ButtonState.Answer;
     }
     public void BindDelegate()
     {
@@ -160,7 +161,7 @@ public class MakeNonogramPlate : MonoBehaviour
                     currentBlockPosition = preBlockPosition + new Vector2(horizonInterval, 0);
                 }
 
-                nonoBlock.Init(new Vector2(innerBlockWidth, innerBlockHeight), new Vector2(innerBlockWidth + 2 * lineThicknessValue, innerBlockHeight + 2 * lineThicknessValue),
+                nonoBlock.Init(new Vector2(innerBlockWidth, innerBlockHeight), new Vector2(innerBlockWidth + 3 * lineThicknessValue, innerBlockHeight + 3 * lineThicknessValue),
                   currentBlockPosition, j, i);
 
                 nonoBlockList.Add(nonoBlock);
@@ -175,6 +176,9 @@ public class MakeNonogramPlate : MonoBehaviour
         backgroundPlateRectTrans.anchoredPosition = new Vector2(-additionalWidth * 0.5f, additionalWidth * 0.5f);
 
         rectTransform.anchoredPosition = new Vector2(-(horizonLength) * 0.5f - 20f, 250f);
+        currentBlock = nonoBlockList[0];
+        currentBlock.ChangeOutLine(true);
+        lastBlock = currentBlock;
 
         if (!innerIsMakerPlate)
             playHintUI.MakeHintUI(nonoBlockPlateInfoData, nonoBlockList);
@@ -184,10 +188,18 @@ public class MakeNonogramPlate : MonoBehaviour
     public void TouchSelectFirstBlock(NonoBlock selectBlock)
     {
         touchSelectFirstBlock = selectBlock;
+        currentBlock = touchSelectFirstBlock;
+        currentBlock.ChangeOutLine(true);
         firstBlockState = touchSelectFirstBlock.GetBlockState();
         SetSelectedBlockList(true, 0);
         SetChangeBlockState();
         ChangeSelectedBlocksState(changeBlockState);
+
+        if (lastBlock)
+        {
+            lastBlock.ChangeOutLine(false);
+        }
+
         selectBlock.ChangeOutLine(true);
     }
 
@@ -238,10 +250,15 @@ public class MakeNonogramPlate : MonoBehaviour
         if (touchSelectFirstBlock)
             touchSelectFirstBlock.ChangeOutLine(false);
 
+        if (currentBlock)
+        {
+            currentBlock.ChangeOutLine(true);
+            lastBlock = currentBlock;
+        }
+
         touchSelectBlockList.Clear();
         touchSelectFirstBlock = null;
         previousBlock = null;
-        currentBlock = null;
 
         // 컨트롤이 끝난 후 유저 정답 저장
         SynchronizeUserAnswer();
@@ -334,12 +351,12 @@ public class MakeNonogramPlate : MonoBehaviour
             return;
         }
 
-        if(buttonState == ButtonState.Answer)
+        if (buttonState == ButtonState.Answer)
         {
             changeBlockState = BlockState.Filled;
         }
 
-        else if(buttonState == ButtonState.Marking) 
+        else if (buttonState == ButtonState.Marking)
         {
             changeBlockState = BlockState.Marked;
         }
@@ -348,5 +365,36 @@ public class MakeNonogramPlate : MonoBehaviour
     public void ChangeButtonState(ButtonState state)
     {
         buttonState = state;
+    }
+
+    public void MoveCurrentBlock(Direction direction)
+    {
+        int x = currentBlock.GetCord().X;
+        int y = currentBlock.GetCord().Y;
+
+        switch (direction)
+        {
+            case Direction.UP:
+                y -= 1;
+                break;
+            case Direction.DOWN:
+                y += 1;
+                break;
+            case Direction.LEFT:
+                x -= 1;
+                break;
+            case Direction.RIGHT:
+                x += 1;
+                break;
+        }
+
+        if(!(y < 0 || y > lineBlockNum -1 || x < 0 || x > lineBlockNum -1))
+        {
+            currentBlock.ChangeOutLine(false);
+            lastBlock = currentBlock;
+            currentBlock = nonoBlockList[y * lineBlockNum + x];
+        }
+
+        return;
     }
 }

@@ -30,10 +30,10 @@ public class MainScene : MonoBehaviour
 
     void Init()
     {
+        BindFunction();
+
         mainGame.Init();
         mainUI.Init();
-
-        BindFunction();
     }
 
     void BindFunction()
@@ -44,5 +44,7 @@ public class MainScene : MonoBehaviour
         {
             button.ChangeButtonStateDelegate = mainGame.makeNonogramPlate.ChangeButtonState;
         }
+
+        mainUI.PlayScreenUI.joyStick.moveCurrentBlockDelegate = mainGame.makeNonogramPlate.MoveCurrentBlock;
     }
 }

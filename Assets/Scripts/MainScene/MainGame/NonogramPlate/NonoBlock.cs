@@ -50,7 +50,7 @@ public class NonoBlock : MonoBehaviour
         innerRectTransform = innterBlock.GetComponent<RectTransform>();
         image = gameObject.GetComponent<Image>();
         innerImage = innterBlock.GetComponent<Image>();
-        outLineColor = Color.yellow;
+        outLineColor = new Color(255, 94, 0, 255) / 255;
     }
 
     public void Init(Vector2 innerSizeDelta, Vector2 outSizeDelta, Vector2 position, int cordX, int cordY)

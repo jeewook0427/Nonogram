@@ -12,5 +12,5 @@ public static class Constants
     public static readonly float HINTUIBLOCKOFFSET = 40.0f;
     public static readonly float HINTUITEXTOFFSET = 40.0f;
 
-    public static readonly float BACKGROUNDWIDTH = 800.0f;
+    public static readonly float BACKGROUNDWIDTH = 700.0f;
 }

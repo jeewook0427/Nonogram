@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1885554868357247345}
   - component: {fileID: 1885554868357247344}
   - component: {fileID: 5322747601972009041}
+  - component: {fileID: 2562674157859285054}
   m_Layer: 5
   m_Name: DirectionButton
   m_TagString: Untagged
@@ -151,3 +152,16 @@ MonoBehaviour:
   animationSpeed: 2
   animateOnClick: 0
   animateOnHover: 1
+--- !u!114 &2562674157859285054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1885554868357247346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e5fae96cfa6e884c81b7d8c7873997a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  direction: 0

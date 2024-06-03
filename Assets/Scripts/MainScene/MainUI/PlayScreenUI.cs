@@ -8,6 +8,8 @@ public class PlayScreenUI : MonoBehaviour
     [SerializeField]
     private GameObject selectButton;
 
+    public JoyStick joyStick;
+
     private SelectButton[] selectButtons;
 
     private void Awake()
@@ -21,6 +23,8 @@ public class PlayScreenUI : MonoBehaviour
         {
             button.Init();
         }
+
+        joyStick.Init();
         BindFunction();
     }
 
