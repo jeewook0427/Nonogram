@@ -11,7 +11,7 @@ public enum ButtonState
 }
 public class SelectButton : MonoBehaviour
 {
-    public System.Action<ButtonState> ChangeButtonStateDelegate;
+    public System.Action<ButtonState> OnClickSelectButtonDelegate;
     public System.Action<SelectButton> ChangeSelectedButtonDelegate;
 
     public ButtonState buttonState;
@@ -36,7 +36,7 @@ public class SelectButton : MonoBehaviour
 
     public void OnClickSelectButton()
     {
-        ChangeButtonStateDelegate.Invoke(buttonState);
+        OnClickSelectButtonDelegate.Invoke(buttonState);
         ChangeSelectedButtonDelegate.Invoke(this);
     }
 

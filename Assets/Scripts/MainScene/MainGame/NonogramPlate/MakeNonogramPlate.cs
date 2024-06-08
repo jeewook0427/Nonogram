@@ -5,7 +5,11 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 
-
+enum ControlState
+{
+    JOYSTICK,
+    TOUCH,
+}
 public class MakeNonogramPlate : MonoBehaviour
 {
     [SerializeField]
@@ -45,11 +49,12 @@ public class MakeNonogramPlate : MonoBehaviour
 
     private RectTransform rectTransform;
     private ButtonState buttonState;
-
-    private int lineBlockNum;
     private BlockState firstBlockState;
     private BlockState changeBlockState;
 
+    private ControlState controlState;
+
+    private int lineBlockNum;
     private bool isMakerPlate;
 
     void Awake()
@@ -64,6 +69,7 @@ public class MakeNonogramPlate : MonoBehaviour
         MakeNonoBlocks();
 
         buttonState = ButtonState.Answer;
+        controlState = ControlState.TOUCH;
     }
     public void BindDelegate()
     {
@@ -194,6 +200,7 @@ public class MakeNonogramPlate : MonoBehaviour
         SetSelectedBlockList(true, 0);
         SetChangeBlockState();
         ChangeSelectedBlocksState(changeBlockState);
+        controlState = ControlState.TOUCH;
 
         if (lastBlock)
         {
@@ -362,13 +369,43 @@ public class MakeNonogramPlate : MonoBehaviour
         }
     }
 
-    public void ChangeButtonState(ButtonState state)
+    public void OnClickSelectButton(ButtonState state)
     {
         buttonState = state;
+
+        if(controlState == ControlState.JOYSTICK)
+        {
+            int x = currentBlock.GetCord().X;
+            int y = currentBlock.GetCord().Y;
+            NonoBlock innerNonoblock = nonoBlockList[x + lineBlockNum * y];
+            BlockState inBlockState = innerNonoblock.GetBlockState();
+            
+            if (inBlockState == BlockState.Empty)
+            {
+                if(buttonState == ButtonState.Answer)
+                {
+                    innerNonoblock.ChangeBlockState(BlockState.Filled);
+                }
+
+                else if(buttonState == ButtonState.Marking)
+                {
+                    innerNonoblock.ChangeBlockState(BlockState.Marked);
+                }
+            }
+
+            else
+            {
+                innerNonoblock.ChangeBlockState(BlockState.Empty);
+            }
+        }
     }
 
     public void MoveCurrentBlock(Direction direction)
     {
+        if (touchSelectFirstBlock != null)
+            return;
+
+        controlState = ControlState.JOYSTICK;
         int x = currentBlock.GetCord().X;
         int y = currentBlock.GetCord().Y;
 

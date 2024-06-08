@@ -42,7 +42,7 @@ public class MainScene : MonoBehaviour
 
         foreach (var button in buttons)
         {
-            button.ChangeButtonStateDelegate = mainGame.makeNonogramPlate.ChangeButtonState;
+            button.OnClickSelectButtonDelegate = mainGame.makeNonogramPlate.OnClickSelectButton;
         }
 
         mainUI.PlayScreenUI.joyStick.moveCurrentBlockDelegate = mainGame.makeNonogramPlate.MoveCurrentBlock;
