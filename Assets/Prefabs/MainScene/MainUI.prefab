@@ -49,5 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13f759c8d26a2a9469252261c6dc497d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainScreenUIPrefab: {fileID: 1104134752936315127, guid: 0060e26f1de6d9b4ca3c99f94dd6a339, type: 3}
   playScreenUIPrefab: {fileID: 906899968513363001, guid: b08e703b22fd34749ac3584fa1a5c2aa, type: 3}
   PlayScreenUI: {fileID: 0}
+  mainScreenUI: {fileID: 0}
