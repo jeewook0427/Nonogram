@@ -6,7 +6,13 @@ using UnityEngine;
 public class MenuPlate : MonoBehaviour
 {
     [SerializeField]
+    NonogramButton nonogramButtonPrefab;
+
+    [SerializeField]
     Image backgroundImage;
+
+    [SerializeField]
+    Transform nonogramButtonLayout;
 
     [Header("----------------------------")]
     [SerializeField]
@@ -18,9 +24,14 @@ public class MenuPlate : MonoBehaviour
     [SerializeField]
     Color Color25X25;
 
+    private List<NonogramButton> nonogramButtonList = new List<NonogramButton>();
+
     private void Awake()
     {
-        
+        for (int i =0; i < 20; i++) 
+        {
+            nonogramButtonList.Add(Instantiate(nonogramButtonPrefab, nonogramButtonLayout));
+        }
     }
 
     public void Init()
